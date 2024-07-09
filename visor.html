@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet Full Map Example</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-minimap@3.6.1/dist/Control.MiniMap.min.css" />
+    <style>
+        #map { height: 100vh; width: 100vw;  }
+        .coordinate-control {
+                background: rgba(255, 255, 255, 0.8);
+                padding: 5px;
+                font-family: Arial, sans-serif;
+                font-size: 14px;
+            
+            }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-minimap@3.6.1/dist/Control.MiniMap.min.js"></script>
+    <script src="https://unpkg.com/leaflet.locatecontrol/dist/L.Control.Locate.min.js"></script>
+    <script>
+        var map = L.map('map').setView([-12.095, -76.995], 15);
+
+        var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        var satelliteLayer = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        });
+
+        var marker1 = L.marker([-15.252, -75.443]).addTo(map).bindPopup('A pretty CSS3 popup.<br> Easily customizable.');
+        var marker2 = L.marker([-12.495, -72.183]).addTo(map).bindPopup('Another popup.');
+
+        var baseLayers = {
+            "OpenStreetMap": osmLayer,
+            "Satellite": satelliteLayer
+        };
+
+        var overlays = {
+            "Marker 1": marker1,
+            "Marker 2": marker2
+        };
+
+        L.control.layers(baseLayers, overlays).addTo(map);
+
+        var miniMapLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        });
+
+        var miniMap = new L.Control.MiniMap(miniMapLayer, {
+            toggleDisplay: true,
+            minimized: false,
+            position: 'bottomright'
+        }).addTo(map);
+
+        L.control.scale().addTo(map);
+
+        L.control.locate({
+            flyTo: true,
+            strings: {
+                title: "Show me where I am!"
+            }
+        }).addTo(map);
+
+
+        var coordsControl = L.control({ position: 'bottomleft' });
+
+        coordsControl.onAdd = function(map) {
+            var div = L.DomUtil.create('div', 'coordinate-control');
+            div.innerHTML = 'Lat: 0, Lng: 0';
+            return div;
+        };
+
+        coordsControl.addTo(map);
+
+        map.on('mousemove', function(e) {
+            var lat = e.latlng.lat.toFixed(6);
+            var lng = e.latlng.lng.toFixed(6);
+            //document.querySelector('.coordinate-control').innerHTML = 'Lat: ' + lat + ', Lng: ' + lng;
+            document.querySelector('.coordinate-control').innerHTML = 'Lng: ' + lng + ', Lat: ' + lat;
+        });
+    </script>
+</body>
+</html>
